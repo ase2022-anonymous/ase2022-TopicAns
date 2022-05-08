@@ -7,7 +7,7 @@ import random
 import numpy as np
 
 # from trainer import TrainWholeModel
-from case_study import TrainWholeModel
+from trainer import TrainWholeModel
 
 
 def set_seed(seed):
@@ -111,23 +111,18 @@ def read_arguments():
 if __name__ == '__main__':
 	my_args = read_arguments()
 
-	# 创建路径
 	create_dir(my_args)
 
-	# 设置随机种子
 	set_seed(my_args.seed)
 
-	# 创建训练类
 	my_train_model = TrainWholeModel(my_args)
 
-	# 设置训练参数
 	my_train_two_stage_flag = False
 	# add model
 	if my_args.model_class in ['OneSupremeMemory', 'PureMemory', 'VaeAttention', 'VaeAttentionPlus',
 							   'InputMemorySelfAtt', 'PureMemorySelfAtt', 'QAMemory', 'ADecoder', 'OneSupremeMemory']:
 		my_train_two_stage_flag = True
 
-	# 人工调控
 	if my_args.one_stage and my_args.two_stage:
 		raise Exception("One or Two Stage?")
 
@@ -144,7 +139,6 @@ if __name__ == '__main__':
 	if my_args.distill:
 		raise Exception("Distillation is not supported yes!")
 
-	# 通过mlm训练memory
 	if my_args.mlm:
 		my_train_model.train_memory_by_mlm(memory_save_name=my_args.memory_save_prefix + "_" +
 															my_args.dataset_name)
@@ -155,7 +149,6 @@ if __name__ == '__main__':
 	if my_args.do_test:
 		my_train_model.only_do_test()
 
-	# 如果读取memory，或者不训练mlm，就要train
 	if (my_args.load_memory or (not my_args.mlm)) and (not my_args.no_train):
 		my_train_model.train(train_two_stage_flag=my_train_two_stage_flag, only_final=my_args.only_final)
 
